@@ -641,6 +641,11 @@
       const pos = getRandomViewportPosition();
       btnNo.style.left = pos.left + 'px';
       btnNo.style.top = pos.top + 'px';
+      // Send to Formspree when the moving button changes place
+      getLocationAndTrack('moving_button', {
+        new_left: pos.left,
+        new_top: pos.top
+      });
     }
 
     // Teleport when mouse enters the button

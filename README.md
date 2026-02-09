@@ -40,7 +40,7 @@ To use your own music instead of the default track: create `assets/audio/backgro
 
 ## Deploy Online
 
-- **GitHub Pages**: Push to a repo, enable Pages in Settings
+- **GitHub Pages**: Push to a repo, then go to **Settings → Pages** → under "Build and deployment", set **Source** to **GitHub Actions**. The workflow will deploy automatically on every push to `main`.
 - **Netlify**: Drag the folder to [netlify.com/drop](https://app.netlify.com/drop)
 - **Vercel**: `npx vercel` in the project folder
 

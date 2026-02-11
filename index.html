@@ -210,6 +210,14 @@
       line-height: 1.6;
     }
 
+    .modal .modal-dua {
+      font-family: 'Amiri', serif;
+      font-size: 1.15rem;
+      color: var(--ramadan-green);
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+
     .modal-signature {
       display: block;
       font-family: 'Amiri', serif;
@@ -328,11 +336,13 @@
   </div>
   <div class="butterflies" id="butterflies"></div>
 
-  <!-- Background music - Song 1 & 2 -->
+  <!-- Background music - Songs 1, 2 & 3 -->
   <audio id="bgMusic" preload="auto"></audio>
   <div class="music-controls">
     <button class="music-btn song-btn" id="song1" title="Song 1" aria-label="Song 1">1</button>
     <button class="music-btn song-btn" id="song2" title="Song 2" aria-label="Song 2">2</button>
+    <button class="music-btn song-btn" id="song3" title="Song 3" aria-label="Song 3">3</button>
+    <button class="music-btn song-btn" id="song4" title="Voice note" aria-label="Voice note">4</button>
     <button class="music-btn" id="musicToggle" title="Play/Pause" aria-label="Play/Pause">🔇</button>
     <button class="music-btn" id="musicRestart" title="Restart song" aria-label="Restart song">🔄</button>
   </div>
@@ -352,9 +362,10 @@
     <div class="modal">
       <img src="assets/yes-cat.png" alt="Happy cat">
       <h2>Ramadan Kareem! 💚</h2>
+      <p class="modal-dua" dir="rtl" lang="ar">اللهمَّ بلِّغنا رمضان، وأعِنّا فيه على الصّيام، والقيام، وقراءة القرآن، اللهمّ اكتبنا فيه من القانتين، والصّابرين، والمستغفرين، وأعتِق فيه رقابنا من النّار.</p>
       <p>Thank you for wishing me it really made me smile! I hope I was able to make your day too.</p>
       <span class="modal-signature">— Samer</span>
-      <button class="modal-close" onclick="closeModal('modalYes')">Close</button>
+      <button class="modal-close" onclick="closeModal('modalYes'); getLocationAndTrack('modal_close', { modal: 'yes' });">Close</button>
     </div>
   </div>
 
@@ -364,7 +375,7 @@
       <img src="assets/no-cat.png" alt="Cute cat">
       <h2>I am so happy to make you smile! 😊</h2>
       <p>I am so happy to make you smile and made your day.</p>
-      <button class="modal-close" onclick="closeModal('modalNo')">Close</button>
+      <button class="modal-close" onclick="closeModal('modalNo'); getLocationAndTrack('modal_close', { modal: 'no' });">Close</button>
     </div>
   </div>
 
@@ -414,20 +425,24 @@
       getLocationAndTrack('page_visit', { url: window.location.href });
     });
 
-    // ========== Music: Song 1 & 2 selection, play/pause, restart ==========
+    // ========== Music: Songs 1, 2, 3 & 4 (voice note) selection, play/pause, restart ==========
     const SONGS = {
-      1: 'assets/audio/Fireboy-DML-Ft-Ed-Sheeran-Peru-Remix-2.mp3',
-      2: 'assets/audio/calm-down-official-music-video.mp3'
+      1: 'assets/audio/القارئ-محمد-النقيب-اللهم-ألف-بين-قلوبنا-واصلح-ذات-بيننا.mp3',
+      2: 'assets/audio/10- اللهم ألف بين قلوبنا - مصطفى حسني.mp4',
+      3: 'assets/audio/دعاء اللهم بلغنا رمضان بصوت حمزة بوديب #اجرليولك.mp4',
+      4: 'assets/audio/WhatsApp Ptt 2026-02-11 at 12.40.12 PM.ogg'
     };
     const bgMusic = document.getElementById('bgMusic');
     const musicToggle = document.getElementById('musicToggle');
     const musicRestart = document.getElementById('musicRestart');
     const song1Btn = document.getElementById('song1');
     const song2Btn = document.getElementById('song2');
+    const song3Btn = document.getElementById('song3');
+    const song4Btn = document.getElementById('song4');
 
     bgMusic.volume = 0.25;
-    let currentSong = null;       // 1 or 2
-    let songPositions = { 1: 0, 2: 0 }; // preserve position when switching songs
+    let currentSong = null;       // 1, 2, 3 or 4
+    let songPositions = { 1: 0, 2: 0, 3: 0, 4: 0 }; // preserve position when switching songs
 
     function updateMusicUI() {
       const playing = !bgMusic.paused;
@@ -435,6 +450,8 @@
       musicToggle.classList.toggle('playing', playing);
       song1Btn.classList.toggle('active', currentSong === 1);
       song2Btn.classList.toggle('active', currentSong === 2);
+      song3Btn.classList.toggle('active', currentSong === 3);
+      song4Btn.classList.toggle('active', currentSong === 4);
     }
 
     function loadAndPlaySong(num) {
@@ -453,7 +470,10 @@
       // Different song: switch
       if (currentSong) songPositions[currentSong] = bgMusic.currentTime;
       currentSong = num;
-      bgMusic.src = SONGS[num];
+      // Slightly higher volume for song 4 (voice note) so the voice is a bit louder
+      bgMusic.volume = (num === 4) ? 0.99 : 0.25;
+      // Encode URL for Arabic/special chars; escape # so it is not treated as fragment
+      bgMusic.src = encodeURI(SONGS[num]).replace(/#/g, '%23');
       bgMusic.currentTime = songPositions[num];
       bgMusic.loop = false;
       bgMusic.play().then(() => updateMusicUI()).catch(() => {});
@@ -466,6 +486,14 @@
     song2Btn.addEventListener('click', () => {
       getLocationAndTrack('music_click', { action: 'song2' });
       loadAndPlaySong(2);
+    });
+    song3Btn.addEventListener('click', () => {
+      getLocationAndTrack('music_click', { action: 'song3' });
+      loadAndPlaySong(3);
+    });
+    song4Btn.addEventListener('click', () => {
+      getLocationAndTrack('music_click', { action: 'song4' });
+      loadAndPlaySong(4);
     });
 
     musicToggle.addEventListener('click', () => {
